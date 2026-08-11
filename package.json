@@ -3,7 +3,16 @@
   "version": "0.2.0",
   "description": "Pi extension for Meta Model API (Muse Spark 1.2 / 1.2-contributor / 1.1) — fixed auth for pi v0.84+.",
   "type": "module",
-  "keywords": ["pi-package", "pi-extension", "meta", "model-api", "muse-spark", "muse", "llm", "ai"],
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "meta",
+    "model-api",
+    "muse-spark",
+    "muse",
+    "llm",
+    "ai"
+  ],
   "license": "MIT",
   "author": "Aditya Pandey (EclipseAditya)",
   "contributors": [
@@ -12,7 +21,7 @@
   "homepage": "https://github.com/EclipseAditya/pi-muse-spark#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/EclipseAditya/pi-muse-spark.git"
+    "url": "git+https://github.com/EclipseAditya/pi-muse-spark.git"
   },
   "bugs": {
     "url": "https://github.com/EclipseAditya/pi-muse-spark/issues"
@@ -28,7 +37,9 @@
     "CHANGELOG.md"
   ],
   "pi": {
-    "extensions": ["./extensions/meta-model-api"]
+    "extensions": [
+      "./extensions/meta-model-api"
+    ]
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
