@@ -3,11 +3,13 @@
 ## Getting started
 
 ```bash
-git clone https://github.com/seemethere/pi-meta-ai
-cd pi-meta-ai
+git clone https://github.com/EclipseAditya/pi-muse-spark
+cd pi-muse-spark
 npm install
 npm run typecheck
 ```
+
+Fork lineage: Original implementation from https://github.com/seemethere/pi-meta-ai — most logic originates there. Please credit upstream when porting changes.
 
 ## Local dev
 
@@ -21,7 +23,7 @@ Inside pi:
 
 ```
 /login → API key → Meta Model API → paste LLM|... key
-/model → meta-ai/muse-spark-1.1
+/model → meta-ai/muse-spark-1.2-contributor
 /meta status
 ```
 
@@ -36,29 +38,30 @@ pi -e ./extensions/meta-model-api
 
 - `npm run typecheck` — TypeScript validation (no emit)
 - Manual test checklist:
-  - [ ] `/meta status` shows masked key and `Resolved: yes` when authenticated
+  - [ ] `/meta status` shows `Resolved: yes (source: stored)` when authenticated via `/login`
   - [ ] `/meta status` shows warning when not authenticated
+  - [ ] No false warning on `session_start` when `auth.json` configured (pi v0.84+ fix)
   - [ ] `/login` → API key → Meta Model API works
   - [ ] Env var fallback works (`MODEL_API_KEY` and `META_API_KEY`)
-  - [ ] `/model` lists `meta-ai/muse-spark-1.1`
+  - [ ] `/model` lists `meta-ai/muse-spark-1.2`, `1.2-contributor`, `1.1`
+  - [ ] Active model detection works for all three models
   - [ ] Tool calling works (read, bash, etc.)
   - [ ] Thinking levels map correctly
-  - [ ] No footer status pollution (`setStatus` cleared on start/shutdown)
 
 ## Project standards
 
 - Conventional commits preferred (`feat:`, `fix:`, `docs:`, `chore:`)
-- Keep README user-focused — no internal pi impl details unless necessary
+- Keep README user-focused
 - No secrets in commits — use `/login` or env vars
-- Maintain compatibility with pi >=0.80.x
+- Maintain compatibility with pi >=0.84.x
 
 ## Release
 
-- Update version in `package.json`
+- Update version in `package.json` and `CHANGELOG.md`
 - `npm pack --dry-run` — verify files list
-- Tag and publish per pi package registry guidance
+- Tag and publish: `git tag v0.2.0 && git push --tags`
 
 ## Reporting issues
 
-Use GitHub issues: https://github.com/seemethere/pi-meta-ai/issues
-Include pi version (`pi --version`), Node version, and `/meta status` output (masked).
+Use GitHub issues: https://github.com/EclipseAditya/pi-muse-spark/issues
+Include pi version (`pi --version`), Node version, and `/meta status` output (masked). For upstream bugs, also check https://github.com/seemethere/pi-meta-ai/issues

@@ -1,9 +1,14 @@
 /**
- * Pi Extension: Meta Model API
+ * Pi Extension: Meta Model API (Muse Spark)
  *
- * Provides Meta's Muse Spark model via api.meta.ai using API key authentication.
+ * Provides Meta's Muse Spark models via api.meta.ai using API key authentication.
  * OpenAI Responses-compatible with tool calling, reasoning, structured output,
  * image input, and prompt caching.
+ *
+ * Forked from https://github.com/seemethere/pi-meta-ai
+ * Original work by seemethere/pi-meta-ai contributors.
+ * This fork fixes pi v0.84+ auth detection (getProviderAuthStatus) and adds
+ * Muse Spark 1.2 / 1.2-contributor models.
  */
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
@@ -25,14 +30,6 @@ function maskKey(key: string): string {
 
 function getEnvKey(): string | undefined {
   return process.env[ENV_VAR] || process.env[META_ENV_VAR];
-}
-
-function getStoredCredential(ctx: any): { type?: string; key?: string } | undefined {
-  try {
-    return ctx.modelRegistry.authStorage?.get?.(PROVIDER_ID);
-  } catch {
-    return undefined;
-  }
 }
 
 export default function (pi: ExtensionAPI) {
@@ -118,29 +115,26 @@ export default function (pi: ExtensionAPI) {
   pi.on("session_start", async (_event, ctx) => {
     ctx.ui.setStatus("meta-ai", undefined);
 
-    const model = ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID);
-    if (!model) {
+    // Check provider registration (any of the three models should be registered)
+    const isRegistered =
+      !!ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID) ||
+      !!ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID_12) ||
+      !!ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID_12_CONTRIB) ||
+      !!ctx.modelRegistry.getProvider(PROVIDER_ID);
+
+    if (!isRegistered) {
       ctx.ui.notify(`Meta provider not registered correctly. Try /reload or reinstall extension.`, "error");
       return;
     }
 
-    const stored = getStoredCredential(ctx);
-    const hasEnv = !!getEnvKey();
-    const isLegacy = stored && stored.type !== "api_key";
-    const hasValidStored = stored?.type === "api_key" && !!stored.key;
-    const isAuthenticated = hasEnv || hasValidStored;
-
-    if (isLegacy && !hasEnv) {
-      ctx.ui.notify(
-        `Meta Model API has legacy ${stored.type} credential. Run /logout ${PROVIDER_ID} then /login → API key → '${DISPLAY_NAME}' to migrate.`,
-        "warning"
-      );
-      return;
-    }
+    // Fixed: pi v0.84+ removed ctx.modelRegistry.authStorage; use getProviderAuthStatus.
+    // This correctly detects auth.json (stored), env var, and runtime keys.
+    const authStatus = ctx.modelRegistry.getProviderAuthStatus(PROVIDER_ID);
+    const isAuthenticated = authStatus.configured || !!getEnvKey();
 
     if (!isAuthenticated) {
       ctx.ui.notify(
-        `Meta Model API not authenticated. Run /login → API key → '${DISPLAY_NAME}' to add your key, or export ${ENV_VAR}=LLM|... before launching pi. Then /model → ${PROVIDER_ID}/${MODEL_ID}`,
+        `Meta Model API not authenticated. Run /login → API key → '${DISPLAY_NAME}' to add your key, or export ${ENV_VAR}=LLM|... before launching pi. Then /model → ${PROVIDER_ID}/${MODEL_ID_12_CONTRIB}`,
         "warning"
       );
     }
@@ -157,19 +151,29 @@ export default function (pi: ExtensionAPI) {
 
       if (sub === "status") {
         const envKey = getEnvKey();
-        const model = ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID);
+        const provider = ctx.modelRegistry.getProvider(PROVIDER_ID);
+        const model11 = ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID);
+        const model12 = ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID_12);
+        const model12c = ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID_12_CONTRIB);
         const authStatus = ctx.modelRegistry.getProviderAuthStatus(PROVIDER_ID);
-        const stored = getStoredCredential(ctx);
-        const isActive = ctx.model?.provider === PROVIDER_ID && ctx.model?.id === MODEL_ID;
-        const isLegacy = stored && stored.type !== "api_key";
-        const hasValidStored = stored?.type === "api_key" && !!stored.key;
-        const hasAuth = !!envKey || hasValidStored;
+        const isActiveProvider = ctx.model?.provider === PROVIDER_ID;
+        const activeModelId = ctx.model?.id ?? "(none)";
+        const hasAuth = authStatus.configured || !!envKey;
 
-        const storedInfo = stored
-          ? stored.type === "api_key"
-            ? `api_key ${maskKey(stored.key || "")} (source: ${authStatus.source || "stored"})`
-            : `${stored.type} — legacy/invalid credential, run /logout ${PROVIDER_ID} then re-login via API key`
-          : "(not in auth.json)";
+        // authStatus.source is "stored" | "environment" | "runtime" | undefined
+        // Stored keys are not readable for masking via this API (by design), so we show source.
+        let storedInfo: string;
+        if (authStatus.configured && authStatus.source === "stored") {
+          storedInfo = `api_key (stored in auth.json) ✓`;
+        } else if (authStatus.configured && authStatus.source === "environment") {
+          storedInfo = `configured via environment (${(authStatus as any).label ?? ENV_VAR})`;
+        } else if (authStatus.configured && authStatus.source === "runtime") {
+          storedInfo = `runtime key set`;
+        } else if (authStatus.configured) {
+          storedInfo = `configured (source: ${authStatus.source ?? "unknown"}) ✓`;
+        } else {
+          storedInfo = "(not in auth.json — run /login)";
+        }
 
         const lines = [
           `${DISPLAY_NAME} — Status`,
@@ -177,23 +181,23 @@ export default function (pi: ExtensionAPI) {
           `Provider: ${PROVIDER_ID} (${DISPLAY_NAME})`,
           `Base URL: ${BASE_URL}`,
           `Models:`,
-          `  ${MODEL_ID_12} — Muse Spark 1.2 (1M ctx, $1.25/$4.25 per M)`,
-          `  ${MODEL_ID_12_CONTRIB} — Muse Spark 1.2 Contributor (1M ctx, $0.10/$0.20 per M)`,
-          `  ${MODEL_ID} — Muse Spark 1.1 (1M ctx, free preview)`,
+          `  ${MODEL_ID_12} — Muse Spark 1.2 (1M ctx, $1.25/$4.25 per M) ${model12 ? "✓" : "✗"}`,
+          `  ${MODEL_ID_12_CONTRIB} — Muse Spark 1.2 Contributor (1M ctx, $0.10/$0.20 per M) ${model12c ? "✓" : "✗"}`,
+          `  ${MODEL_ID} — Muse Spark 1.1 (1M ctx, free preview) ${model11 ? "✓" : "✗"}`,
           `  API: openai-responses`,
           ``,
           `Auth:`,
           `  Env ${ENV_VAR}: ${envKey ? maskKey(envKey) : "(not set)"} ${process.env[META_ENV_VAR] ? `(fallback ${META_ENV_VAR} detected)` : ""}`,
           `  auth.json: ${storedInfo}`,
-          `  Resolved: ${hasAuth ? "yes ✓ ready" : "no — run /login or set env var"}`,
+          `  Resolved: ${hasAuth ? `yes ✓ ready (source: ${authStatus.source ?? (envKey ? "environment" : "stored")})` : "no — run /login or set env var"}`,
           ``,
           `State:`,
-          `  Model registered: ${model ? "yes" : "no"}`,
-          `  Active model: ${isActive ? "yes ✓" : "no — use /model to select meta-ai/muse-spark-1.1"}`,
+          `  Provider registered: ${provider ? "yes ✓" : "no ✗"}`,
+          `  Active model: ${isActiveProvider ? `yes ✓ (${activeModelId})` : `no — use /model to select ${PROVIDER_ID}/${MODEL_ID_12_CONTRIB}`}`,
           ``,
           `Next steps:`,
           `  1. /login → API key → "${DISPLAY_NAME}" → paste LLM|... key`,
-          `  2. /model → ${PROVIDER_ID}/${MODEL_ID}`,
+          `  2. /model → ${PROVIDER_ID}/${MODEL_ID_12_CONTRIB}`,
           `  3. Ask anything — pi tools (read, bash, edit, write) work out of the box`,
           ``,
           `Env alternative: export ${ENV_VAR}=LLM|... then /reload (also supports ${META_ENV_VAR})`,
@@ -219,9 +223,10 @@ export default function (pi: ExtensionAPI) {
             `  2. Export or login:`,
             `     export MODEL_API_KEY=LLM|...   (before launching pi)`,
             `     or inside pi: /login → API key → Meta Model API`,
-            `  3. /model → meta-ai/muse-spark-1.2`,
+            `  3. /model → meta-ai/muse-spark-1.2-contributor`,
             ``,
             `Docs: https://dev.meta.ai/docs`,
+            `Source: https://github.com/EclipseAditya/pi-muse-spark (fork of https://github.com/seemethere/pi-meta-ai)`,
           ].join("\n"),
           "info"
         );

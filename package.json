@@ -1,18 +1,21 @@
 {
-  "name": "pi-meta-ai",
-  "version": "0.1.1",
-  "description": "Pi extension for Meta Model API (Muse Spark) via API key. Adds Meta provider with OpenAI Responses compatibility, tool calling, reasoning, and easy login.",
+  "name": "pi-muse-spark",
+  "version": "0.2.0",
+  "description": "Pi extension for Meta Model API (Muse Spark 1.2 / 1.2-contributor / 1.1) — fixed auth for pi v0.84+.",
   "type": "module",
-  "keywords": ["pi-package", "pi-extension", "meta", "model-api", "muse-spark", "llm", "ai"],
+  "keywords": ["pi-package", "pi-extension", "meta", "model-api", "muse-spark", "muse", "llm", "ai"],
   "license": "MIT",
-  "author": "Meta Model API Contributors",
-  "homepage": "https://github.com/seemethere/pi-meta-ai#readme",
+  "author": "Aditya Pandey (EclipseAditya)",
+  "contributors": [
+    "seemethere/pi-meta-ai contributors (original work)"
+  ],
+  "homepage": "https://github.com/EclipseAditya/pi-muse-spark#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/seemethere/pi-meta-ai.git"
+    "url": "https://github.com/EclipseAditya/pi-muse-spark.git"
   },
   "bugs": {
-    "url": "https://github.com/seemethere/pi-meta-ai/issues"
+    "url": "https://github.com/EclipseAditya/pi-muse-spark/issues"
   },
   "engines": {
     "node": ">=18"
@@ -35,8 +38,8 @@
     "@earendil-works/pi-coding-agent": "*"
   },
   "devDependencies": {
-    "@earendil-works/pi-ai": "^0.80.0",
-    "@earendil-works/pi-coding-agent": "^0.80.0",
+    "@earendil-works/pi-ai": "^0.84.0",
+    "@earendil-works/pi-coding-agent": "^0.84.0",
     "typescript": "^5.0.0"
   }
 }

@@ -4,7 +4,8 @@
 
 | Version | Supported |
 |---------|-----------|
-| 0.1.x   | :white_check_mark: |
+| 0.2.x   | :white_check_mark: |
+| 0.1.x   | upstream only |
 
 ## Handling secrets
 
@@ -16,7 +17,8 @@
 ## Reporting a Vulnerability
 
 - Do NOT open a public issue for sensitive security reports
-- Email maintainers via GitHub Security Advisories: https://github.com/seemethere/pi-meta-ai/security/advisories/new
+- Use GitHub Security Advisories: https://github.com/EclipseAditya/pi-muse-spark/security/advisories/new
+- Upstream advisories (original): https://github.com/seemethere/pi-meta-ai/security/advisories/new
 - Or open an issue marked as security concern with no secret details
 
 We aim to respond within 5 business days.
