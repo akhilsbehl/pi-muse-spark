@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.0 - 2026-09-16
+
+### Added
+- **Muse Spark 1.3:** Added `muse-spark-1.3` ($1.25/$4.25 per M) and `muse-spark-1.3-contributor` ($0.10/$0.20 per M) models — released 2026-09-02, 1M context, same `openai-responses` capabilities as 1.2. Extension now registers 5 models (1.3, 1.3-contrib, 1.2, 1.2-contrib, 1.1).
+- `/meta status` now shows all 5 models and defaults recommendation to `muse-spark-1.3-contributor`.
+
+### Changed
+- `package.json` version bumped to `0.3.0`, description updated for 1.3, `homepage`/`repository`/`bugs` now point to `nicklambourne/pi-muse-spark` (fork of `EclipseAditya/pi-muse-spark`).
+- `models.json.example` includes 1.3 entries first.
+- README updated for 1.3 install/quickstart/models table and fork lineage via `EclipseAditya/pi-muse-spark`.
+- Auth / active-model detection now covers `muse-spark-1.3*` in addition to `1.2*`.
+
 ## 0.2.0 - 2026-08-11
 
 ### Forked from seemethere/pi-meta-ai

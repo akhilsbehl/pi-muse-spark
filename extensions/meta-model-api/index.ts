@@ -8,7 +8,7 @@
  * Forked from https://github.com/seemethere/pi-meta-ai
  * Original work by seemethere/pi-meta-ai contributors.
  * This fork fixes pi v0.84+ auth detection (getProviderAuthStatus) and adds
- * Muse Spark 1.2 / 1.2-contributor models.
+ * Muse Spark 1.3 / 1.3-contributor / 1.2 / 1.2-contributor models.
  */
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
@@ -19,6 +19,8 @@ const BASE_URL = "https://api.meta.ai/v1";
 const MODEL_ID = "muse-spark-1.1";
 const MODEL_ID_12 = "muse-spark-1.2";
 const MODEL_ID_12_CONTRIB = "muse-spark-1.2-contributor";
+const MODEL_ID_13 = "muse-spark-1.3";
+const MODEL_ID_13_CONTRIB = "muse-spark-1.3-contributor";
 const ENV_VAR = "MODEL_API_KEY";
 const META_ENV_VAR = "META_API_KEY";
 
@@ -45,6 +47,48 @@ export default function (pi: ExtensionAPI) {
     apiKey: `$${ENV_VAR}`,
     api: "openai-responses",
     models: [
+      {
+        id: MODEL_ID_13,
+        name: "Muse Spark 1.3",
+        reasoning: true,
+        input: ["text", "image"],
+        cost: { input: 1.25, output: 4.25, cacheRead: 0.15, cacheWrite: 0.15 },
+        contextWindow: 1_048_576,
+        maxTokens: 64_000,
+        thinkingLevelMap: {
+          minimal: "minimal",
+          low: "low",
+          medium: "medium",
+          high: "high",
+          xhigh: "high",
+        },
+        compat: {
+          supportsReasoningEffort: true,
+          supportsDeveloperRole: true,
+          supportsUsageInStreaming: true,
+        },
+      },
+      {
+        id: MODEL_ID_13_CONTRIB,
+        name: "Muse Spark 1.3 Contributor",
+        reasoning: true,
+        input: ["text", "image"],
+        cost: { input: 0.10, output: 0.20, cacheRead: 0.002, cacheWrite: 0.002 },
+        contextWindow: 1_048_576,
+        maxTokens: 64_000,
+        thinkingLevelMap: {
+          minimal: "minimal",
+          low: "low",
+          medium: "medium",
+          high: "high",
+          xhigh: "high",
+        },
+        compat: {
+          supportsReasoningEffort: true,
+          supportsDeveloperRole: true,
+          supportsUsageInStreaming: true,
+        },
+      },
       {
         id: MODEL_ID_12,
         name: "Muse Spark 1.2",
@@ -115,11 +159,13 @@ export default function (pi: ExtensionAPI) {
   pi.on("session_start", async (_event, ctx) => {
     ctx.ui.setStatus("meta-ai", undefined);
 
-    // Check provider registration (any of the three models should be registered)
+    // Check provider registration (any of the models should be registered)
     const isRegistered =
       !!ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID) ||
       !!ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID_12) ||
       !!ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID_12_CONTRIB) ||
+      !!ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID_13) ||
+      !!ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID_13_CONTRIB) ||
       !!ctx.modelRegistry.getProvider(PROVIDER_ID);
 
     if (!isRegistered) {
@@ -134,7 +180,7 @@ export default function (pi: ExtensionAPI) {
 
     if (!isAuthenticated) {
       ctx.ui.notify(
-        `Meta Model API not authenticated. Run /login → API key → '${DISPLAY_NAME}' to add your key, or export ${ENV_VAR}=LLM|... before launching pi. Then /model → ${PROVIDER_ID}/${MODEL_ID_12_CONTRIB}`,
+        `Meta Model API not authenticated. Run /login → API key → '${DISPLAY_NAME}' to add your key, or export ${ENV_VAR}=LLM|... before launching pi. Then /model → ${PROVIDER_ID}/${MODEL_ID_13_CONTRIB}`,
         "warning"
       );
     }
@@ -155,6 +201,8 @@ export default function (pi: ExtensionAPI) {
         const model11 = ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID);
         const model12 = ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID_12);
         const model12c = ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID_12_CONTRIB);
+        const model13 = ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID_13);
+        const model13c = ctx.modelRegistry.find(PROVIDER_ID, MODEL_ID_13_CONTRIB);
         const authStatus = ctx.modelRegistry.getProviderAuthStatus(PROVIDER_ID);
         const isActiveProvider = ctx.model?.provider === PROVIDER_ID;
         const activeModelId = ctx.model?.id ?? "(none)";
@@ -181,6 +229,8 @@ export default function (pi: ExtensionAPI) {
           `Provider: ${PROVIDER_ID} (${DISPLAY_NAME})`,
           `Base URL: ${BASE_URL}`,
           `Models:`,
+          `  ${MODEL_ID_13} — Muse Spark 1.3 (1M ctx, $1.25/$4.25 per M) ${model13 ? "✓" : "✗"}`,
+          `  ${MODEL_ID_13_CONTRIB} — Muse Spark 1.3 Contributor (1M ctx, $0.10/$0.20 per M) ${model13c ? "✓" : "✗"}`,
           `  ${MODEL_ID_12} — Muse Spark 1.2 (1M ctx, $1.25/$4.25 per M) ${model12 ? "✓" : "✗"}`,
           `  ${MODEL_ID_12_CONTRIB} — Muse Spark 1.2 Contributor (1M ctx, $0.10/$0.20 per M) ${model12c ? "✓" : "✗"}`,
           `  ${MODEL_ID} — Muse Spark 1.1 (1M ctx, free preview) ${model11 ? "✓" : "✗"}`,
@@ -193,11 +243,11 @@ export default function (pi: ExtensionAPI) {
           ``,
           `State:`,
           `  Provider registered: ${provider ? "yes ✓" : "no ✗"}`,
-          `  Active model: ${isActiveProvider ? `yes ✓ (${activeModelId})` : `no — use /model to select ${PROVIDER_ID}/${MODEL_ID_12_CONTRIB}`}`,
+          `  Active model: ${isActiveProvider ? `yes ✓ (${activeModelId})` : `no — use /model to select ${PROVIDER_ID}/${MODEL_ID_13_CONTRIB}`}`,
           ``,
           `Next steps:`,
           `  1. /login → API key → "${DISPLAY_NAME}" → paste LLM|... key`,
-          `  2. /model → ${PROVIDER_ID}/${MODEL_ID_12_CONTRIB}`,
+          `  2. /model → ${PROVIDER_ID}/${MODEL_ID_13_CONTRIB}`,
           `  3. Ask anything — pi tools (read, bash, edit, write) work out of the box`,
           ``,
           `Env alternative: export ${ENV_VAR}=LLM|... then /reload (also supports ${META_ENV_VAR})`,
@@ -216,17 +266,17 @@ export default function (pi: ExtensionAPI) {
             `  /meta status — show key status (masked), auth source, active model`,
             `  /meta help   — this help`,
             `  /login       — add your key via API key → Meta Model API`,
-            `  /model       — select a Meta model (muse-spark-1.2, muse-spark-1.2-contributor, muse-spark-1.1)`,
+            `  /model       — select a Meta model (muse-spark-1.3, muse-spark-1.3-contributor, muse-spark-1.2, muse-spark-1.2-contributor, muse-spark-1.1)`,
             ``,
             `Setup:`,
             `  1. Get key: https://dev.meta.ai → API keys → Create (LLM|...)`,
             `  2. Export or login:`,
             `     export MODEL_API_KEY=LLM|...   (before launching pi)`,
             `     or inside pi: /login → API key → Meta Model API`,
-            `  3. /model → meta-ai/muse-spark-1.2-contributor`,
+            `  3. /model → meta-ai/muse-spark-1.3-contributor (or muse-spark-1.3)`,
             ``,
             `Docs: https://dev.meta.ai/docs`,
-            `Source: https://github.com/EclipseAditya/pi-muse-spark (fork of https://github.com/seemethere/pi-meta-ai)`,
+            `Source: https://github.com/nicklambourne/pi-muse-spark (fork of https://github.com/EclipseAditya/pi-muse-spark → https://github.com/seemethere/pi-meta-ai)`,
           ].join("\n"),
           "info"
         );
