@@ -13,7 +13,7 @@
           "contextWindow": 1048576,
           "maxTokens": 64000,
           "cost": { "input": 1.25, "output": 4.25, "cacheRead": 0.15, "cacheWrite": 0.15 },
-          "thinkingLevelMap": { "minimal": "minimal", "low": "low", "medium": "medium", "high": "high", "xhigh": "high" },
+          "thinkingLevelMap": { "off": "minimal", "minimal": "minimal", "low": "low", "medium": "medium", "high": "high", "xhigh": "high", "max": "high" },
           "compat": { "supportsReasoningEffort": true, "supportsDeveloperRole": true, "supportsUsageInStreaming": true }
         },
         {
@@ -24,7 +24,7 @@
           "contextWindow": 1048576,
           "maxTokens": 64000,
           "cost": { "input": 0.1, "output": 0.2, "cacheRead": 0.002, "cacheWrite": 0.002 },
-          "thinkingLevelMap": { "minimal": "minimal", "low": "low", "medium": "medium", "high": "high", "xhigh": "high" },
+          "thinkingLevelMap": { "off": "minimal", "minimal": "minimal", "low": "low", "medium": "medium", "high": "high", "xhigh": "high", "max": "high" },
           "compat": { "supportsReasoningEffort": true, "supportsDeveloperRole": true, "supportsUsageInStreaming": true }
         },
         {
@@ -35,7 +35,7 @@
           "contextWindow": 1048576,
           "maxTokens": 64000,
           "cost": { "input": 1.25, "output": 4.25, "cacheRead": 0.15, "cacheWrite": 0.15 },
-          "thinkingLevelMap": { "minimal": "minimal", "low": "low", "medium": "medium", "high": "high", "xhigh": "high" },
+          "thinkingLevelMap": { "off": "minimal", "minimal": "minimal", "low": "low", "medium": "medium", "high": "high", "xhigh": "high", "max": "high" },
           "compat": { "supportsReasoningEffort": true, "supportsDeveloperRole": true, "supportsUsageInStreaming": true }
         },
         {
@@ -46,7 +46,7 @@
           "contextWindow": 1048576,
           "maxTokens": 64000,
           "cost": { "input": 0.1, "output": 0.2, "cacheRead": 0.002, "cacheWrite": 0.002 },
-          "thinkingLevelMap": { "minimal": "minimal", "low": "low", "medium": "medium", "high": "high", "xhigh": "high" },
+          "thinkingLevelMap": { "off": "minimal", "minimal": "minimal", "low": "low", "medium": "medium", "high": "high", "xhigh": "high", "max": "high" },
           "compat": { "supportsReasoningEffort": true, "supportsDeveloperRole": true, "supportsUsageInStreaming": true }
         },
         {
@@ -57,7 +57,7 @@
           "contextWindow": 1048576,
           "maxTokens": 64000,
           "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
-          "thinkingLevelMap": { "minimal": "minimal", "low": "low", "medium": "medium", "high": "high", "xhigh": "high" },
+          "thinkingLevelMap": { "off": "minimal", "minimal": "minimal", "low": "low", "medium": "medium", "high": "high", "xhigh": "high", "max": "high" },
           "compat": { "supportsReasoningEffort": true, "supportsDeveloperRole": true, "supportsUsageInStreaming": true }
         }
       ]

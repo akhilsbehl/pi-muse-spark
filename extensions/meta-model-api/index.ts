@@ -56,11 +56,13 @@ export default function (pi: ExtensionAPI) {
         contextWindow: 1_048_576,
         maxTokens: 64_000,
         thinkingLevelMap: {
+          off: "minimal",
           minimal: "minimal",
           low: "low",
           medium: "medium",
           high: "high",
           xhigh: "high",
+          max: "high",
         },
         compat: {
           supportsReasoningEffort: true,
@@ -77,11 +79,13 @@ export default function (pi: ExtensionAPI) {
         contextWindow: 1_048_576,
         maxTokens: 64_000,
         thinkingLevelMap: {
+          off: "minimal",
           minimal: "minimal",
           low: "low",
           medium: "medium",
           high: "high",
           xhigh: "high",
+          max: "high",
         },
         compat: {
           supportsReasoningEffort: true,
@@ -98,11 +102,13 @@ export default function (pi: ExtensionAPI) {
         contextWindow: 1_048_576,
         maxTokens: 64_000,
         thinkingLevelMap: {
+          off: "minimal",
           minimal: "minimal",
           low: "low",
           medium: "medium",
           high: "high",
           xhigh: "high",
+          max: "high",
         },
         compat: {
           supportsReasoningEffort: true,
@@ -119,11 +125,13 @@ export default function (pi: ExtensionAPI) {
         contextWindow: 1_048_576,
         maxTokens: 64_000,
         thinkingLevelMap: {
+          off: "minimal",
           minimal: "minimal",
           low: "low",
           medium: "medium",
           high: "high",
           xhigh: "high",
+          max: "high",
         },
         compat: {
           supportsReasoningEffort: true,
@@ -141,11 +149,13 @@ export default function (pi: ExtensionAPI) {
         contextWindow: 1_048_576,
         maxTokens: 64_000,
         thinkingLevelMap: {
+          off: "minimal",
           minimal: "minimal",
           low: "low",
           medium: "medium",
           high: "high",
           xhigh: "high",
+          max: "high",
         },
         compat: {
           supportsReasoningEffort: true,
